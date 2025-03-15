@@ -1,0 +1,15 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь системы")
+System(service, "Микросервисное приложение", "Управление устройствами и сценариями")
+System_Ext(sensor, "Датчики", "Датчики температуры")
+System_Ext(device, "Устройства", "Управление отоплением")
+
+Rel(user, service, "Управляет устройствами и сценариями")
+Rel(user, sensor, "Выбирает и подключает из списка поддерживаемых")
+Rel(user, device, "Выбирает и подключает из списка поддерживаемых")
+Rel(service, sensor, "Получает данные")
+Rel(service, device, "Отправляет команды")
+
+@enduml

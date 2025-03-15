@@ -1,0 +1,32 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь системы")
+Person(admin, "Администратор", "Администратор системы")
+Person(partner, "Партнёр", "Производитель устройств и датчиков")
+System(smartHomeSystem, "SmartHome System", "Система управления умным домом")
+
+Container_Boundary(smartHomeSystem, "SmartHome System") {
+  Container(adminPanel, "Панель для администрирования", "JavaScript", "Предоставляет данные и проксирует команды администаторов")
+  Container(web, "Веб приложение", "JavaScript", "Управление устройствами и сценариями")
+  Container(mobile, "Мобильное приложение", "Kotlin", "Управление устройствами и сценариями")
+  Container(backend, "Микросервисное приложение", "Java, Spring boot", "Управление устройствами и сценариями")
+  Container(database, "База данных", "PostgreSQL", "Хранение данных")
+  Container(broker, "Брокер сообщений", "Apache Kafka", "Обмен сообщениями между микросервисами")
+}
+
+System_Ext(sensor, "Датчики", "Датчики температуры")
+System_Ext(device, "Устройства", "Управление отоплением")
+
+Rel(user, web, "Управляет устройствами и сценариями")
+Rel(user, mobile, "Управляет устройствами и сценариями")
+Rel(admin, adminPanel, "Администрирует систему")
+Rel(partner, web, "Регистрация совместимых устройств, управление магазином")
+Rel(web, backend, "Проксирование запросов")
+Rel(mobile, backend, "Проксирование запросов")
+Rel(adminPanel, backend, "Проксирование запросов")
+Rel(backend, database, "Чтение и запись данных")
+Rel(backend, broker, "Отправка и чтение сообщений")
+Rel(backend, sensor, "Получает данные")
+Rel(backend, device, "Отправляет команды")
+@enduml
