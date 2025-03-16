@@ -1,32 +1,61 @@
 @startuml
+title Микросервисный backend
+
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
-Person(user, "Пользователь", "Пользователь системы")
-Person(admin, "Администратор", "Администратор системы")
-Person(partner, "Партнёр", "Производитель устройств и датчиков")
-System(smartHomeSystem, "SmartHome System", "Система управления умным домом")
-
-Container_Boundary(smartHomeSystem, "SmartHome System") {
-  Container(adminPanel, "Панель для администрирования", "JavaScript", "Предоставляет данные и проксирует команды администаторов")
-  Container(web, "Веб приложение", "JavaScript", "Управление устройствами и сценариями")
-  Container(mobile, "Мобильное приложение", "Kotlin", "Управление устройствами и сценариями")
-  Container(backend, "Микросервисное приложение", "Java, Spring boot", "Управление устройствами и сценариями")
-  Container(database, "База данных", "PostgreSQL", "Хранение данных")
-  Container(broker, "Брокер сообщений", "Apache Kafka", "Обмен сообщениями между микросервисами")
+Container_Boundary(backend, "Backend Services") {
+Container(APIGateway, "APIGateway", "Java, Spring Boot", "Проксирует запросы от клиентов, балансирует нагрузку, управляет авторизацией и ролями")
+Container(SensorService, "SensorService", "Java, Spring Boot", "Управляет датчиками")
+Container(DeviceService, "DeviceService", "Java, Spring Boot", "Управляет устройствами")
+Container(ProfileService, "ProfileService", "Java, Spring Boot", "Управляет профилем пользователя")
+Container(ScenarioService, "ScenarioService", "Java, Spring Boot", "Управляет сценариями умного дома")
+Container(NotificationService, "NotificationService", "Java, Spring Boot", "Управляет оповещениями пользователей")
+Container(AuditService, "AuditService", "Java, Spring Boot", "Собирает и агрегирует данные для аналитики")
 }
+
+Rel(APIGateway, SensorService, "CRUD запросы по датчикам")
+Rel(APIGateway, DeviceService, "CRUD запросы по устройствам")
+Rel(APIGateway, ProfileService, "CRUD запросы по профилю пользователя")
+Rel(APIGateway, ScenarioService, "CRUD запросы по пользовательским сценариям умного дома")
+Rel(APIGateway, NotificationService, "Запросы по оповещениям")
+Rel(APIGateway, AuditService, "Формирование и выгрузка аналитических отчётов")
+
+Container_Boundary(database, "Database") {
+Container(SensorServiceDatabase, "SensorServiceDatabase", "PostgreSQL", "Хранит данные о датчиках и их показаниях")
+Container(DeviceServiceDatabase, "DeviceServiceDatabase", "PostgreSQL", "Хранит данные об устройствах")
+Container(ProfileServiceDatabase, "ProfileServiceDatabase", "PostgreSQL", "Хранит данные о пользователях")
+Container(ScenarioServiceDatabase, "ScenarioServiceDatabase", "PostgreSQL", "Хранит пользовательские сценарии")
+Container(NotificationServiceDatabase, "NotificationServiceDatabase", "PostgreSQL", "Хранит данные о каналах оповещения")
+Container(AuditServiceDatabase, "AuditServiceDatabase", "PostgreSQL", "Хранит данные для аналитики")
+}
+
+Container_Boundary(cache, "Cache") {
+Container(redis, "APIGatewayCache", "Redis", "Храненение кэша для частых и трудозатратных запросов")
+}
+
+Rel(APIGateway, redis, "Чтение, запись, инвалидация кэша")
+Rel(SensorService, SensorServiceDatabase, "Чтение и запись")
+Rel(DeviceService, DeviceServiceDatabase, "Чтение и запись")
+Rel(ProfileService, ProfileServiceDatabase, "Чтение и запись")
+Rel(ScenarioService, ScenarioServiceDatabase, "Чтение и запись")
+Rel(NotificationService, NotificationServiceDatabase, "Чтение и запись")
+Rel(AuditService, AuditServiceDatabase, "Чтение и запись")
+
+Container_Boundary(broker, "Message Broker") {
+Container(kafka, "Apache Kafka", "Управление сообщениями, балансировка")
+}
+
+Rel(SensorService, kafka, "Чтение и публикация")
+Rel(DeviceService, kafka, "Чтение и публикация")
+Rel(ProfileService, kafka, "Чтение и публикация")
+Rel(ScenarioService, kafka, "Чтение и публикация")
+Rel(NotificationService, kafka, "Чтение")
+Rel(AuditService, kafka, "Чтение и публикация")
 
 System_Ext(sensor, "Датчики", "Датчики температуры")
 System_Ext(device, "Устройства", "Управление отоплением")
 
-Rel(user, web, "Управляет устройствами и сценариями")
-Rel(user, mobile, "Управляет устройствами и сценариями")
-Rel(admin, adminPanel, "Администрирует систему")
-Rel(partner, web, "Регистрация совместимых устройств, управление магазином")
-Rel(web, backend, "Проксирование запросов")
-Rel(mobile, backend, "Проксирование запросов")
-Rel(adminPanel, backend, "Проксирование запросов")
-Rel(backend, database, "Чтение и запись данных")
-Rel(backend, broker, "Отправка и чтение сообщений")
-Rel(backend, sensor, "Получает данные")
-Rel(backend, device, "Отправляет команды")
+Rel(SensorService, sensor, "Получает данные")
+Rel(DeviceService, device, "Отправляет команды")
+
 @enduml

@@ -66,7 +66,8 @@
 
 **Диаграмма компонентов (Components)**
 
-[Компоненты микросервисного бэкенда](puml/microservices/MicroserviceBackendComponents.puml)
+[Компоненты микросервиса sensor_service](puml/microservices/MicroserviceBackendSensorServiceComponents.puml)
+[Компоненты микросервиса device_service](puml/microservices/MicroserviceBackendDeviceServiceComponents.puml)
 
 **Диаграмма кода (Code)**
 

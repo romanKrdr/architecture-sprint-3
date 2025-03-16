@@ -1,0 +1,27 @@
+@startuml
+title DeviceService
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(deviceService, "DeviceService") {
+  Component(deviceController, "DeviceController", "REST API", "Принимает HTTP-запросы от APIGateway")
+  Component(deviceServiceLayer, "ServiceLayer", "Бизнес-логика", "Обрабатывает данные устройств")
+  Component(deviceRepository, "DeviceRepository", "Доступ к данным", "Взаимодействует с DeviceServiceDatabase")
+  Component(deviceKafkaProducer, "KafkaProducer", "Kafka Producer", "Публикует события в Kafka")
+  Component(deviceKafkaConsumer, "KafkaConsumer", "Kafka Consumer", "Читает события из Kafka")
+}
+
+Rel(deviceController, deviceServiceLayer, "Передаёт запросы")
+Rel(deviceServiceLayer, deviceRepository, "Чтение и запись данных")
+Rel(deviceServiceLayer, deviceKafkaProducer, "Публикует события")
+Rel(deviceKafkaConsumer, deviceServiceLayer, "Передаёт события")
+
+Rel(deviceRepository, DeviceServiceDatabase, "Чтение и запись", "PostgreSQL")
+Rel(deviceKafkaProducer, kafka, "Публикует события", "Apache Kafka")
+Rel(deviceKafkaConsumer, kafka, "Читает события", "Apache Kafka")
+
+System_Ext(device, "Устройства", "Управление отоплением")
+Rel(deviceController, device, "Получает данные")
+Rel(deviceServiceLayer, device, "Отправляет команды")
+
+@enduml
