@@ -1,0 +1,64 @@
+@startuml
+title SensorService
+
+class SensorRestController {
+  +getSensor(String sensorId): ResponseEntity<Sensor>
+  +getSensorData(String sensorId): ResponseEntity<SensorData>
+  +updateSensor(String sensorId, Sensor sensor): ResponseEntity<Void>
+  +saveSensorData(String sensorId, SensorData data): ResponseEntity<Void>
+  +registerSensor(Sensor sensor): ResponseEntity<Void>
+  +deleteSensor(String sensorId): ResponseEntity<Void>
+}
+
+class SensorService {
+  +getSensor(String sensorId): Sensor
+  +getSensorData(String sensorId): SensorData
+  +updateSensor(String sensorId, Sensor sensor): void
+  +saveSensorData(String sensorId, SensorData data): void
+  +registerSensor(Sensor sensor): void
+  +deleteSensor(String sensorId): void
+}
+
+class SensorRepository {
+  +findById(String sensorId): Sensor
+  +save(Sensor sensor): void
+  +delete(String sensorId): void
+}
+
+class KafkaProducer {
+  +sendMessage(String topic, String message): void
+}
+
+class KafkaConsumer {
+  +listen(String topic): void
+  +processSensorMessage(String message): void
+}
+
+SensorRestController --> SensorService : обработка запроса
+KafkaConsumer --> SensorService : обработка прочитанного сообщения
+SensorService --> SensorRepository : чтение и запись в бд
+SensorService --> KafkaProducer : публикация сообщения
+
+note top of KafkaConsumer
+  Вычитывает сообщение из Apache Kafka
+end note
+
+note top of SensorRestController
+  Контроллер, обрабатывающий HTTP-запросы от APIGateway
+  для управления датчиками.
+end note
+
+note right of SensorService
+  Основной сервисный класс, содержащий
+  бизнес-логику для работы с датчиками.
+end note
+
+note top of SensorRepository
+  Взаимодействует с базой данных
+end note
+
+note right of KafkaProducer
+  Публикует сообщение в Apache Kafka
+end note
+
+@enduml

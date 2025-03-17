@@ -1,0 +1,26 @@
+@startuml
+title SensorService
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(sensorService, "SensorService") {
+  Component(sensorController, "SensorController", "REST API", "Принимает HTTP-запросы от APIGateway")
+  Component(sensorServiceLayer, "ServiceLayer", "Бизнес-логика", "Обрабатывает данные датчиков")
+  Component(sensorRepository, "SensorRepository", "Доступ к данным", "Взаимодействует с SensorServiceDatabase")
+  Component(sensorKafkaProducer, "KafkaProducer", "Kafka Producer", "Публикует события в Kafka")
+  Component(sensorKafkaConsumer, "KafkaConsumer", "Kafka Consumer", "Читает события из Kafka")
+}
+
+Rel(sensorController, sensorServiceLayer, "Передаёт запросы")
+Rel(sensorServiceLayer, sensorRepository, "Чтение и запись данных")
+Rel(sensorServiceLayer, sensorKafkaProducer, "Публикует события")
+Rel(sensorKafkaConsumer, sensorServiceLayer, "Передаёт события")
+
+Rel(sensorRepository, SensorServiceDatabase, "Чтение и запись", "PostgreSQL")
+Rel(sensorKafkaProducer, kafka, "Публикует события", "Apache Kafka")
+Rel(sensorKafkaConsumer, kafka, "Читает события", "Apache Kafka")
+
+System_Ext(sensor, "Датчики", "Датчики температуры")
+Rel(sensorController, sensor, "Получает данные")
+
+@enduml

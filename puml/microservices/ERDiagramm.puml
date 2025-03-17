@@ -1,0 +1,103 @@
+@startuml
+entity Profile {
+    +id: UUID
+    +name: String
+    +status: String
+    +contacts: List<Contact>
+    +houses: List<House>
+    +createdAt: TimestampZ
+    +modifiedAt: TimestampZ
+}
+
+entity Contact {
+    +id: UUID
+    +channel: String
+    +value: String
+    +isNotificationChannel: Boolean
+}
+
+entity House {
+    +id: UUID
+    +name: String
+    +status: String
+    +user_id: UUID
+    +scenarios: List<Scenario>
+    +rooms: List<Room>
+    +createdAt: TimestampZ
+    +modifiedAt: TimestampZ
+}
+
+entity Scenario {
+    +id: UUID
+    +name: String
+    +status: String
+    +house_id: UUID
+    +actions: List<Action>
+    +createdAt: TimestampZ
+    +modifiedAt: TimestampZ
+}
+
+entity Action {
+    +id: UUID
+    +name: String
+    +status: String
+    +scenario_id: UUID
+    +room_id: UUID
+    +device_id: UUID
+    +sensor_id: UUID
+    +operation: String
+}
+
+entity Room {
+    +id: UUID
+    +name: String
+    +house_id: UUID
+    +devices: List<Device>
+    +sensors: List<Sensor>
+}
+
+
+entity Device {
+    +id: UUID
+    +name: String
+    +status: String
+    +room_id: UUID
+    +serial_number: String
+    +producer: String
+    +model: String
+    +createdAt: TimestampZ
+    +modifiedAt: TimestampZ
+}
+
+entity Sensor {
+    +id: UUID
+    +name: String
+    +status: String
+    +room_id: UUID
+    +serial_number: String
+    +producer: String
+    +model: String
+    +createdAt: TimestampZ
+    +modifiedAt: TimestampZ
+}
+
+entity SensorData {
+    +id: UUID
+    +sensor_id: UUID
+    +timestamp: TimestampZ
+    +value: Double
+}
+
+Profile ||--o{ Contact : "Может иметь несколько"
+Profile ||--o{ House : "Может иметь несколько"
+House ||--o{ Room : "Может иметь несколько"
+House ||--o{ Scenario : "Может иметь несколько"
+Scenario ||--o{ Action : "Может иметь несколько"
+Room ||--o{ Device : "Может иметь несколько"
+Room ||--o{ Sensor : "Может иметь несколько"
+Sensor ||--o{ SensorData : "Может иметь несколько"
+Action ||-- Room : "Затрагивает 1"
+Action ||-- Device : "Затрагивает 1"
+Action ||-- Sensor : "Затрагивает 1"
+
+@enduml

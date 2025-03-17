@@ -1,0 +1,16 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Пользователь", "Пользователь системы")
+System(monolith, "Монолитное приложение", "Управление отоплением и мониторинг температуры")
+System_Ext(sensor, "Датчики", "Датчики температуры")
+System_Ext(device, "Устройства", "Управление отоплением")
+Person(employee, "Сотрудник", "Специалист по подключению")
+
+Rel(user, monolith, "Управляет отоплением и просматривает температуру")
+Rel(monolith, sensor, "Получает данные о температуре")
+Rel(monolith, device, "Отправляет команды")
+Rel(employee, sensor, "Подключает датчики к системе")
+Rel(employee, device, "Подключает устройства к системе")
+
+@enduml
