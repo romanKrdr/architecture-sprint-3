@@ -62,7 +62,7 @@
 
 **Диаграмма контейнеров (Containers)**
 
-[Контекст микросервисной системы](puml/microservices/MicroserviceContainers.puml)
+[Контейнеры микросервисной системы](puml/microservices/MicroserviceContainers.puml)
 
 **Диаграмма компонентов (Components)**
 
